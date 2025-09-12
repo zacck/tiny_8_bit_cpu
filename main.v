@@ -8,7 +8,10 @@ module tiny_cpu (
   /*Clock Output, Counter Register and clock setup*/
   wire        int_osc            ;
   reg  [27:0] frequency_counter_i;
+
+  /* verilator lint_off PINMISSING */
   SB_HFOSC u_SB_HFOSC (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
+  /* verilator lint_on PINMISSING */
 
   // CPU  General Purpose register
   reg [2:0] A; 
