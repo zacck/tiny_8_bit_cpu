@@ -14,7 +14,7 @@ module tiny_cpu (
   /* verilator lint_on PINMISSING */
 
   // CPU  General Purpose register
-  reg [2:0] R [0:15]; 
+  reg [31:0] R [0:15]; 
   //Program Counter 
   reg [3:0] PC; 
   //ROM Memory 16 registers whose size is 8 bits
@@ -32,10 +32,7 @@ module tiny_cpu (
   /*
    *  These are placeholder instructions before we have to deal with
    *  a compiler. 
-   *  The instructions upper 4 bits are the opcode 
-   *  0001 INC
-   *  0010 OUT
-   *  The lower 4 bits now become the register to use
+  *  The lower 4 bits now become the register to use
    */
   initial begin
 	  ROM[0] = 8'b0001_0000; // go to next instruction
@@ -55,14 +52,27 @@ module tiny_cpu (
 	  ROM[14] = 8'b0001_0111;  
 	  ROM[15] = 8'b0010_0111;  
   end
-
+  
+  /*
+   *  The instructions upper 4 bits are the opcode 
+   *  0001 INC , 0010  ADD, 0011 SUB, 0100 AND, 0101 OR, 
+   *  0110 XOR , 0111 SHL, 1000 SHR
+   */ 
   always @(posedge slow_clk) begin
   	case(ROM[PC][7:4])
-	  4'b0001: R[ROM[PC][3:0]] <= (R[ROM[PC][3:0]] + 1) & 3'b111; 
-	  4'b0010: ;
+	  4'b0001: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] + 1;	//INC 
+	  4'b0010: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] + R[0];   //ADD
+	  4'b0011: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] - R[0];   //SUB
+	  4'b0100: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] & R[1];   //AND
+	  4'b0101: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] | R[1];   //OR
+	  4'b0110: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] ^ R[1];   //XOR
+	  4'b0111: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] << 1;     //SHL
+	  4'b1000: R[ROM[PC][3:0]] <= R[ROM[PC][3:0]] >> 1;     //SHR
 	  default: ;
 	endcase
-	PC <= PC + 1; 
+	PC <= PC + 1;
+	/* R0 is always a 0*/
+	R[0] <= 32'b0; 
   end
 
 
