@@ -1,6 +1,6 @@
-## Tiny Naive 8 bit CPU 
+## Tiny RISC CPU 
 
-Verilog implementation of a Naive 8 bit CPU on a FPGA
+Verilog implementation of a Naive CPU on a FPGA
 
 The UPduino FPGA
 
