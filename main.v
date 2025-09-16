@@ -1,17 +1,15 @@
 module tiny_cpu (
+  //Inputs 
+  input CLK,
   // outputs
   output wire led_red  , // Red
   output wire led_blue , // Blue
   output wire led_green  // Green
 );
   
-  /*Clock Output, Counter Register and clock setup*/
-  wire        int_osc            ;
-  reg  [27:0] frequency_counter_i;
+  /* Counter Register for slowing clock*/
+  reg  [20:0] frequency_counter_i;
 
-  /* verilator lint_off PINMISSING */
-  SB_HFOSC u_SB_HFOSC (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
-  /* verilator lint_on PINMISSING */
 
   // CPU  General Purpose register
   reg [31:0] R [0:15]; 
@@ -21,13 +19,11 @@ module tiny_cpu (
   reg [7:0] ROM [0:15];
 
   /*Run the FPGA oscillator*/
-  always @(posedge int_osc) begin
+  always @(posedge CLK) begin
     frequency_counter_i <= frequency_counter_i + 1'b1;
   end
 
-  /*Divide the the oscillator output by 2^25*/
-
-  wire slow_clk = frequency_counter_i[24];
+  wire slow_clk = frequency_counter_i[19];
 
   /*
    *  These are placeholder instructions before we have to deal with
@@ -50,7 +46,7 @@ module tiny_cpu (
  	  ROM[12] = 8'b0001_0110;  
 	  ROM[13] = 8'b0010_0110;  
 	  ROM[14] = 8'b0001_0111;  
-	  ROM[15] = 8'b0010_0111;  
+	  ROM[15] = 8'b0010_0111;
   end
   
   /*
@@ -75,19 +71,8 @@ module tiny_cpu (
 	R[0] <= 32'b0; 
   end
 
-
-  SB_RGBA_DRV RGB_DRIVER (
-    .RGBLEDEN(1'b1			),
-    .RGB0PWM (R[ROM[PC][3:0]][2]	),
-    .RGB1PWM (R[ROM[PC][3:0]][1]	),
-    .RGB2PWM (R[ROM[PC][3:0]][0]	),
-    .CURREN  (1'b1 			),
-    .RGB0    (led_green 		), //Actual Hardware connection
-    .RGB1    (led_blue  		),
-    .RGB2    (led_red   		)
-  );
-  defparam RGB_DRIVER.RGB0_CURRENT = "0b000001";
-  defparam RGB_DRIVER.RGB1_CURRENT = "0b000001";
-  defparam RGB_DRIVER.RGB2_CURRENT = "0b000001";
+  assign led_blue = 	R[ROM[PC][3:0]][2]; 
+  assign led_green =	R[ROM[PC][3:0]][1]; 
+  assign led_red = 	R[ROM[PC][3:0]][0];
 
 endmodule

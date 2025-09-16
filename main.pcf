@@ -1,3 +1,8 @@
-set_io led_red 		44 
-set_io led_green	43
-set_io led_blue 	42
+# LED outputs
+set_io led_red 		41 
+set_io led_green	39
+set_io led_blue 	40
+
+
+# clock input 
+set_io CLK		20
