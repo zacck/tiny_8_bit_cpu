@@ -8,18 +8,18 @@ module tiny_cpu (
 );
 
   /* Counter Register for slowing clock*/
-  reg         [20:0] frequency_counter_i;
+  reg         [20:0] frequency_counter_i = 0;
 
 
   // CPU  General Purpose register
   reg         [31:0] R                                 [15];
   //Program Counter
-  reg         [ 3:0] PC;
+  reg         [ 3:0] PC = 0;
   //ROM Memory 16 registers whose size is 8 bits
   reg         [31:0] ROM                               [15];
 
   /* Wires to access registers */
-  reg         [31:0] IR;
+  reg         [31:0] IR = 0;
 
   wire        [ 6:0] opcode = IR[6:0];
   wire        [ 4:0] rd = IR[11:7];
@@ -31,7 +31,7 @@ module tiny_cpu (
   wire signed [31:0] imm_i = {{20{IR[31]}}, IR[31:20]};
 
   /*hold computation for LED*/
-  reg         [ 4:0] last_written_reg;
+  reg         [ 4:0] last_written_reg = 0;
 
 
   /*Run the FPGA oscillator*/
@@ -49,8 +49,8 @@ module tiny_cpu (
   initial begin
     ROM[0]  = 32'h00500093;  // ADDI x1, x0, 5
     ROM[1]  = 32'h00300113;  // ADD1 x1, x2, 3
-    ROM[2]  = 32'h002081B3;  // ADD x3, x1, 2
-    ROM[3]  = 32'h0071F213;  // ANDI x4, x3,7
+    ROM[2]  = 32'h002081B3;  // ADD x3, x1,  8
+    ROM[3]  = 32'h0071F213;  // ANDI x4, x3, 0
     ROM[4]  = 32'h0011E293;  // ORI  x5, x3, 1
     ROM[5]  = 32'h00000000;  //NOPS
     ROM[6]  = 32'h00000000;
