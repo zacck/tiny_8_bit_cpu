@@ -34,7 +34,7 @@ module tiny_cpu_tb;
         slow_clock_cycles = 0; slow_clock_cycles < 10; slow_clock_cycles = slow_clock_cycles + 1
     ) begin
       // Wait for a rising edge of the slow clock
-      @(posedge dut.CLK);
+      @(posedge dut.slow_clk);
 
       $display("Slow cycle %0d: PC=%0d, IR=%h, LEDs: R=%b, G=%b, B=%b", slow_clock_cycles, dut.PC,
                dut.IR, led_red, led_green, led_blue);
