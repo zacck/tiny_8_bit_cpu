@@ -12,11 +12,16 @@ module tiny_cpu (
 
 
   // CPU  General Purpose register
-  reg         [31:0] R                                 [15];
+  reg         [31:0] R                                           [ 16];
   //Program Counter
   reg         [ 3:0] PC = 0;
   //ROM Memory 16 registers whose size is 8 bits
-  reg         [31:0] ROM                               [15];
+  reg         [31:0] ROM                                         [ 16];
+
+  //RAM Memory 256 Words
+  reg         [31:0] RAM                                         [256];
+
+
 
   /* Wires to access registers */
   reg         [31:0] IR = 0;
@@ -29,6 +34,7 @@ module tiny_cpu (
   wire        [ 6:0] funct7 = IR[31:25];
 
   wire signed [31:0] imm_i = {{20{IR[31]}}, IR[31:20]};
+  wire signed [31:0] imm_s = {{20{IR[31]}}, IR[31:25], IR[11:7]};
 
   /*hold computation for LED*/
   reg         [ 4:0] last_written_reg = 0;
@@ -39,7 +45,7 @@ module tiny_cpu (
     frequency_counter_i <= frequency_counter_i + 1'b1;
   end
 
-  wire slow_clk = frequency_counter_i[19];
+  wire slow_clk = frequency_counter_i[2];
 
   /*
    *  These are placeholder instructions before we have to deal with
@@ -51,12 +57,12 @@ module tiny_cpu (
     ROM[1]  = 32'h00300113;  // ADD1 x1, x2, 3
     ROM[2]  = 32'h002081B3;  // ADD x3, x1,  8
     ROM[3]  = 32'h0071F213;  // ANDI x4, x3, 0
-    ROM[4]  = 32'h0011E293;  // ORI  x5, x3, 1
-    ROM[5]  = 32'h00000000;  //NOPS
-    ROM[6]  = 32'h00000000;
-    ROM[7]  = 32'h00000000;
+    ROM[4]  = 32'h0011E293;  // ORI  x5, x3, 9
+    ROM[5]  = 32'h02A00313;  // ADDI x6, x0, 42
+    ROM[6]  = 32'h00000393;  // ADDI x7, x0, 0
+    ROM[7]  = 32'h00638023;  // SW   x6, 0(x7)
     ROM[8]  = 32'h00000000;
-    ROM[9]  = 32'h00000000;
+    ROM[9]  = 32'h0003A403;  // LW   x8, 0(x7)
     ROM[10] = 32'h00000000;
     ROM[11] = 32'h00000000;
     ROM[12] = 32'h00000000;
@@ -84,6 +90,7 @@ module tiny_cpu (
         endcase
         last_written_reg <= rd;
       end
+      //ITYPE
       7'b0010011: begin
         case (funct3)
           3'b000:  R[rd] <= R[rs1] + imm_i;  //ADDI
@@ -92,6 +99,20 @@ module tiny_cpu (
           default: ;
         endcase
         last_written_reg <= rd;
+      end
+      //LTYPE
+      7'b0000011: begin
+        case (funct3)
+          3'b010:  R[rd] <= RAM[R[rs1]+imm_i];  //LW
+          default: ;
+        endcase
+      end
+      //STYPE
+      7'b0100011: begin
+        case (funct3)
+          3'b010:  RAM[R[rs1]+imm_s] <= R[rs2];  //SW
+          default: ;
+        endcase
       end
       default: ;
     endcase
