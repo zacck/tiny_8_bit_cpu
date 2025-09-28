@@ -57,12 +57,12 @@ module tiny_cpu (
     ROM[1]  = 32'h00300113;  // ADD1 x1, x2, 3
     ROM[2]  = 32'h002081B3;  // ADD x3, x1,  8
     ROM[3]  = 32'h0071F213;  // ANDI x4, x3, 0
-    ROM[4]  = 32'h0011E293;  // ORI  x5, x3, 1
-    ROM[5]  = 32'h02A00093;  // ADDI x1, x0, 42
-    ROM[6]  = 32'h00000113;  // ADDI x2, x0, 0
-    ROM[7]  = 32'h00112023;  // SW   x1, 0(x8)
-    ROM[8]  = 32'h00012183;  // LW   x3, 0(x8)
-    ROM[9]  = 32'h0001E213;  // ORI  x4, x8 0
+    ROM[4]  = 32'h0011E293;  // ORI  x5, x3, 9
+    ROM[5]  = 32'h02A00313;  // ADDI x6, x0, 42
+    ROM[6]  = 32'h00000393;  // ADDI x7, x0, 0
+    ROM[7]  = 32'h00638223;  // SW   x6, 0(x7)
+    ROM[8]  = 32'h0003A103;  // LW   x8, 0(x7)
+    ROM[9]  = 32'h00000000;
     ROM[10] = 32'h00000000;
     ROM[11] = 32'h00000000;
     ROM[12] = 32'h00000000;
@@ -101,14 +101,14 @@ module tiny_cpu (
         last_written_reg <= rd;
       end
       //LTYPE
-      7'b0100011: begin
+      7'b0000011: begin
         case (funct3)
           3'b010:  R[rd] <= RAM[R[rs1]+imm_i];  //LW
           default: ;
         endcase
       end
       //STYPE
-      7'b0000011: begin
+      7'b0100011: begin
         case (funct3)
           3'b010:  RAM[R[rs1]+imm_s] <= R[rs2];  //SW
           default: ;

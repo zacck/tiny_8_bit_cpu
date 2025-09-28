@@ -55,10 +55,9 @@ module tiny_cpu_tb;
     $display("x5 (should be 9): %h", dut.R[5]);
 
     // Test LType & SType
-    $display("x6 (after SW/LW should be 2A/42): %h", dut.R[1]);
-    $display("x7 (base address, should be 0): %h", dut.R[2]);
-    $display("x8 (load value, should be 2A/42): %h", dut.R[3]);
-    $display("x9 (copy of x3, should be 2A/42): %h", dut.R[4]);
+    $display("x6 (after SW/LW should be 2A/42): %h", dut.R[6]);
+    $display("x7 (base address, should be 0): %h", dut.R[7]);
+    $display("x8 (load value, should be 2A/42): %h", dut.R[8]);
 
 
 
@@ -84,28 +83,22 @@ module tiny_cpu_tb;
 
     // STYPE & LTYPE
 
-    assert (dut.R[1] === 32'h2A)
+    assert (dut.R[6] === 32'h2A)
     else begin
       error_count++;
-      $error("x1 should be 2A/42, got %h", dut.R[1]);
+      $error("x6 should be 2A/42, got %h", dut.R[6]);
     end
 
-    assert (dut.R[2] === 32'h0)
+    assert (dut.R[7] === 32'h0)
     else begin
       error_count++;
-      $error("x2 should be 0, got %h", dut.R[2]);
+      $error("x7 should be 0, got %h", dut.R[7]);
     end
 
-    assert (dut.R[3] === 32'h2A)
+    assert (dut.R[8] === 32'h2A)
     else begin
       error_count++;
-      $error("x3 should be 2A/42, got %h", dut.R[3]);
-    end
-
-    assert (dut.R[4] === 32'h2A)
-    else begin
-      error_count++;
-      $error("x4 should be 2A/42, got %h", dut.R[4]);
+      $error("x8 should be 2A/42, got %h", dut.R[8]);
     end
 
     $display("\nTest completed with %0d errors", error_count);
