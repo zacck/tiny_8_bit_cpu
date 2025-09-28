@@ -57,7 +57,8 @@ module tiny_cpu_tb;
     // Test LType & SType
     $display("x6 (after SW/LW should be 2A/42): %h", dut.R[6]);
     $display("x7 (base address, should be 0): %h", dut.R[7]);
-    $display("x8 (load value, should be 2A/42): %h", dut.R[8]);
+    $display("RAM[0]( should be 2a): %h", dut.RAM[0]);
+    $display("x8 (load value, should be 2a): %h", dut.R[8]);
 
 
 
@@ -95,11 +96,19 @@ module tiny_cpu_tb;
       $error("x7 should be 0, got %h", dut.R[7]);
     end
 
+    assert (dut.RAM[0] === 32'h2A)
+    else begin
+      error_count++;
+      $error("RAM[0] should be 2A/42, got %h", dut.RAM[0]);
+    end
+
     assert (dut.R[8] === 32'h2A)
     else begin
       error_count++;
-      $error("x8 should be 2A/42, got %h", dut.R[8]);
+      $error("x8 should be 2a, got %h", dut.R[8]);
     end
+
+
 
     $display("\nTest completed with %0d errors", error_count);
 
